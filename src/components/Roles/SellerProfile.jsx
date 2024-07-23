@@ -23,7 +23,7 @@ const SellerProfile = () => {
   const navigate = useNavigate();
   let userdatal = localStorage.getItem("cUser");
   let userdataparsed = JSON.parse(userdatal);
-  let buyerId = userdataparsed._id;
+  let buyerId = userdataparsed?._id;
   const socket = useContext(SocketContext); // use the socket connection...
   useEffect(() => {
     getAllCategories();
@@ -31,17 +31,16 @@ const SellerProfile = () => {
   // getAllCategories
   const getAllCategories = async () => {
     try {
-      let { data } = await axios.get(`${apiUrl}/user/getAllCategories`)
+      let { data } = await axios.get(`${apiUrl}/user/getAllCategories`);
       if (data.success) {
-        setCategories(data.categories)
+        setCategories(data.categories);
       }
     } catch (error) {
-      console.log("Error", error)
+      console.log("Error", error);
     }
-
-  }
+  };
   // These ids for the chat, but i will need other userid for to do the message to him.
-  let alsoLoggedInUserId = userdataparsed._id;
+  let alsoLoggedInUserId = userdataparsed?._id;
   let otherUserID = userid;
   console.log("redux data::", gotUserData);
   let dispatch = useDispatch();
@@ -88,15 +87,18 @@ const SellerProfile = () => {
       let userdataparsed = JSON.parse(userdata);
       let userId = userdataparsed._id;
       if (location.state.userVisit) {
-        let { data } = await axios.get(`${apiUrl}/user/getAllProducts/${userid}`);
+        let { data } = await axios.get(
+          `${apiUrl}/user/getAllProducts/${userid}`
+        );
         setallProducts(data.data.products);
         console.log("Products must be ", data);
       } else {
-        let { data } = await axios.get(`${apiUrl}/user/getAllProducts/${userId}`);
+        let { data } = await axios.get(
+          `${apiUrl}/user/getAllProducts/${userId}`
+        );
         setallProducts(data.data.products);
         console.log("let logs the data", data);
       }
-
     } catch (error) {
       console.log("Err in function getAllProductsData", error);
     }
@@ -143,7 +145,7 @@ const SellerProfile = () => {
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     setFile(selectedFile);
-    setfilePreview(selectedFile.name)
+    setfilePreview(selectedFile.name);
   };
 
   const handleInputChange = (event) => {
@@ -183,15 +185,22 @@ const SellerProfile = () => {
 
   const addParticipant = async (alsoLoggedInUserId, otherUserID) => {
     try {
+      if (!alsoLoggedInUserId) {
+        toast.error("Please Login to perform this action!");
+        return;
+      }
+      if (!otherUserID) {
+        toast.error("Please Login to perform this action!");
+        return;
+      }
 
       let { data } = await axios.patch(
-        `${apiUrl}/user/addParticipant/${alsoLoggedInUserId}/${otherUserID}`,
-
+        `${apiUrl}/user/addParticipant/${alsoLoggedInUserId}/${otherUserID}`
       );
       if (data.success) {
         navigate(`/buyer/inbox/${alsoLoggedInUserId}`, {
           state: { otherUserID: otherUserID },
-        })
+        });
       }
     } catch (error) {
       console.log("error in userProfileUpdate", error);
@@ -205,21 +214,24 @@ const SellerProfile = () => {
         <div>
           <Toaster />
           <div className="flex justify-around items-center">
-            <Link className="text-sm text-blue-500" to={"/"}>&larr; Home</Link>
+            <Link className="text-sm text-blue-500" to={"/"}>
+              &larr; Home
+            </Link>
             <h1 className="py-5 text-3xl font-bold text-center text-gray-500 underline">
               {location.state.userVisit
                 ? `${emailPrefix}'s Profile`
                 : "Seller Dashboard"}
             </h1>
 
-            {!location.state.userVisit && <Link
-              to={`/sellerOrders/${userid}`}
-              type="button"
-              class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            >
-              All Sales
-
-            </Link>}
+            {!location.state.userVisit && (
+              <Link
+                to={`/sellerOrders/${userid}`}
+                type="button"
+                class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              >
+                All Sales
+              </Link>
+            )}
 
             {!location.state.userVisit && (
               <>
@@ -243,7 +255,6 @@ const SellerProfile = () => {
                     <path d="M11.241 9.817c-.36.275-.801.425-1.255.427-.428 0-.845-.138-1.187-.395L0 2.6V14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2.5l-8.759 7.317Z" />
                   </svg>
                   <span class="sr-only">Notifications</span>
-
                 </button>
                 <button
                   onClick={logout}
@@ -335,8 +346,8 @@ const SellerProfile = () => {
                     </button>
                   )}
                   <button
-                    onClick={() => addParticipant(alsoLoggedInUserId, otherUserID)
-
+                    onClick={() =>
+                      addParticipant(alsoLoggedInUserId, otherUserID)
                     }
                     className="flex-1 rounded-full border-2 border-gray-400 dark:border-gray-700 font-semibold text-black dark:text-white px-4 py-2"
                   >
@@ -387,29 +398,33 @@ const SellerProfile = () => {
             <div>
               {HideAddBtn && (
                 <>
-                  <h2 className="text-2xl text-gray-400 my-10">
-                    Add a New Product.
-                  </h2>
-                  <button
-                    className=""
-                    onClick={() => setHideAddBtn(false)}
-                    disabled={location.state.userVisit}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      className="w-20 h-20 text-gray-600"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                      />
-                    </svg>
-                  </button>
+                  {alsoLoggedInUserId && (
+                    <>
+                      <h2 className="text-2xl text-gray-400 my-10">
+                        Add a New Product.
+                      </h2>
+                      <button
+                        className=""
+                        onClick={() => setHideAddBtn(false)}
+                        disabled={location.state.userVisit}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          className="w-20 h-20 text-gray-600"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                          />
+                        </svg>
+                      </button>
+                    </>
+                  )}
                 </>
               )}
               {!HideAddBtn && (
@@ -468,13 +483,21 @@ const SellerProfile = () => {
                               className="relative flex min-h-[200px] items-center justify-center rounded-md border border-dashed border-[#e0e0e0] p-12 text-center"
                             >
                               <div>
-                                {filePreview ? filePreview : <><span className="mb-2 block text-xl font-semibold text-[#07074D]">
-                                  Drop files here
-                                </span><span className="mb-2 block text-base font-medium text-[#6B7280]">
-                                    Or
-                                  </span><span className="inline-flex rounded border border-[#e0e0e0] py-2 px-7 text-base font-medium text-[#07074D]">
-                                    Browse
-                                  </span></>}
+                                {filePreview ? (
+                                  filePreview
+                                ) : (
+                                  <>
+                                    <span className="mb-2 block text-xl font-semibold text-[#07074D]">
+                                      Drop files here
+                                    </span>
+                                    <span className="mb-2 block text-base font-medium text-[#6B7280]">
+                                      Or
+                                    </span>
+                                    <span className="inline-flex rounded border border-[#e0e0e0] py-2 px-7 text-base font-medium text-[#07074D]">
+                                      Browse
+                                    </span>
+                                  </>
+                                )}
                               </div>
                             </label>
                           </div>
@@ -488,12 +511,12 @@ const SellerProfile = () => {
                             className="block w-full text-sm font-medium transition duration-75 border border-gray-800 rounded-lg shadow-sm h-9 focus:border-blue-600 focus:ring-1 focus:ring-inset focus:ring-blue-600 bg-none"
                           >
                             <option value="-Select">--Select</option>
-                            {categories && categories.map((val) => (
-                              <option value={val.category}>
-                                {val.category}
-                              </option>
-                            ))}
-
+                            {categories &&
+                              categories.map((val) => (
+                                <option value={val.category}>
+                                  {val.category}
+                                </option>
+                              ))}
                           </select>
                         </div>
                         <div>
@@ -530,7 +553,10 @@ const SellerProfile = () => {
               {allProducts &&
                 allProducts.map((val) => (
                   <div className="bg-white rounded-lg overflow-hidden shadow-lg ring-opacity-40 max-w-sm">
-                    <div className="relative cursor-pointer" onClick={() => navigate(`/details/${val._id}`)}>
+                    <div
+                      className="relative cursor-pointer"
+                      onClick={() => navigate(`/details/${val._id}`)}
+                    >
                       <img
                         width={500}
                         height={500}
@@ -551,7 +577,10 @@ const SellerProfile = () => {
                           Price ${val.price}
                         </span>
                         {!location.state.userVisit ? (
-                          <button onClick={() => navigate(`/editgig/${val._id}`)} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:ring">
+                          <button
+                            onClick={() => navigate(`/editgig/${val._id}`)}
+                            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:ring"
+                          >
                             Edit
                           </button>
                         ) : (

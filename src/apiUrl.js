@@ -1,2 +1,2 @@
-let apiUrl = `http://localhost:1000`;
+let apiUrl = `https://multivender.drawsketch.co`;
 export { apiUrl };

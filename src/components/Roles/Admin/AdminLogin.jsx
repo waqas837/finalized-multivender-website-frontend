@@ -24,6 +24,7 @@ const AdminLogin = () => {
         let { data } = await axios.post(`${apiUrl}/admin/login`, {
           credentials,
         });
+        console.log("data", data)
         if (data.success && data.data.userType === "admin") {
           localStorage.setItem("cAdmin", JSON.stringify(data.data));
           // dispatch(UserSignupDetails(data.data));
