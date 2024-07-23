@@ -20,6 +20,9 @@ function BookingOrder({ fromMyProfile }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  useEffect(() => {
     let buyer = localStorage.getItem("cUser");
     if (!buyer) {
       toast("Please Login to book an order");
