@@ -310,7 +310,7 @@ const SellerProfile = () => {
                       <>
                         <h1 className="text-2xl">
                           {userstatus === "buyer"
-                            ? "Current account is buyer..."
+                            ? ""
                             : "Seller Account"}
                         </h1>
                       </>
