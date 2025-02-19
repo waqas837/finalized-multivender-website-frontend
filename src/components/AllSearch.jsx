@@ -3,6 +3,7 @@ import Navbar from "./Navbar";
 import axios from "axios";
 import { apiUrl } from "../apiUrl";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import StarRatings from "react-star-ratings";
 const AllSearch = () => {
   let stararr = [0, 1, 2, 3, 4];
   let arr = [0, 1, 2, 3, 4];
